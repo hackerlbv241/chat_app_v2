@@ -2,18 +2,19 @@ import 'package:chat_app/components/my_button.dart';
 import 'package:chat_app/components/my_textfield.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatelessWidget {
+class RegisterPage extends StatelessWidget {
   // email et mot de passe controller
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _pwController = TextEditingController();
+  final TextEditingController _confirmController = TextEditingController();
 
   // oontap pour aller à la page d'inscription
   final void Function()? onTap;
 
-  LoginPage({super.key, required this.onTap});
+  RegisterPage({super.key, required this.onTap});
 
-  // login method
-  void login() {
+  // register method
+  void register() {
     //
   }
 
@@ -36,7 +37,7 @@ class LoginPage extends StatelessWidget {
 
             // message de bienvenue
             Text(
-              "Bon retour sur l'AppChat de PARIS13",
+              "Bienvenue sur l'AppChat de PARIS13",
               style: TextStyle(
                   color: Theme.of(context).colorScheme.inversePrimary,
                   fontSize: 16),
@@ -61,13 +62,22 @@ class LoginPage extends StatelessWidget {
               controller: _pwController,
             ),
 
+            const SizedBox(height: 10),
+
+            // Confirmation du mot de passe
+            MyTextField(
+              hintText: "Repétez votre mot de passe",
+              obscureText: true,
+              controller: _confirmController,
+            ),
+
             const SizedBox(height: 25),
 
             // bouton de connexion
 
             MyButton(
-              text: "Se connecter",
-              onTap: login,
+              text: "S'inscrire",
+              onTap: register,
             ),
 
             const SizedBox(height: 25),
@@ -77,13 +87,13 @@ class LoginPage extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Pas de compte? ",
+                Text("Déjà un compte? ",
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.primary)),
                 GestureDetector(
                   onTap: onTap,
                   child: Text(
-                    "Inscrivez-vous",
+                    "Connectez-vous",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primary),
