@@ -1,3 +1,4 @@
+import 'package:chat_app/auth/auth_service.dart';
 import 'package:chat_app/components/my_button.dart';
 import 'package:chat_app/components/my_textfield.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +15,36 @@ class RegisterPage extends StatelessWidget {
   RegisterPage({super.key, required this.onTap});
 
   // register method
-  void register() {
-    //
+  void register(BuildContext context) {
+    // obtenir les services d'authentification
+    final _auth = AuthService();
+
+    // si les mots de passe correspondent, on crée l'utilisateur
+    if (_pwController.text == _confirmController.text) {
+      try {
+        _auth.signUpWithEmailPassword(
+          _emailController.text,
+          _pwController.text,
+        );
+      } catch (e) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(e.toString()),
+          ),
+        );
+      }
+    }
+
+    // si les mots de passe ne correspondent pas, on affiche un message d'erreur
+    else {
+      showDialog(
+        context: context,
+        builder: (context) => const AlertDialog(
+          title: Text("Les mots de passe ne correspondent pas"),
+        ),
+      );
+    }
   }
 
   @override
@@ -77,7 +106,7 @@ class RegisterPage extends StatelessWidget {
 
             MyButton(
               text: "S'inscrire",
-              onTap: register,
+              onTap: () => register(context),
             ),
 
             const SizedBox(height: 25),
