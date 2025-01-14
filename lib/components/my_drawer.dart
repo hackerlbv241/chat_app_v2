@@ -1,4 +1,4 @@
-import 'package:chat_app/auth/auth_service.dart';
+import 'package:chat_app/services/auth/auth_service.dart';
 import 'package:chat_app/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 
@@ -7,8 +7,8 @@ class MyDrawer extends StatelessWidget {
 
   void logout() {
     // obtenir l'instance de FirebaseAuth
-    final _auth = AuthService();
-    _auth.signOut();
+    final auth = AuthService();
+    auth.signOut();
   }
 
   @override
@@ -36,8 +36,8 @@ class MyDrawer extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 25.0),
                 child: ListTile(
-                  title: Text("A C C U E I L"),
-                  leading: Icon(Icons.home),
+                  title: const Text("A C C U E I L"),
+                  leading: const Icon(Icons.home),
                   onTap: () {
                     Navigator.pop(context);
                   },
@@ -49,8 +49,8 @@ class MyDrawer extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(left: 25.0),
                 child: ListTile(
-                  title: Text("P A R A M E T R E S"),
-                  leading: Icon(Icons.settings),
+                  title: const Text("P A R A M E T R E S"),
+                  leading: const Icon(Icons.settings),
                   onTap: () {
                     Navigator.pop(context);
 
@@ -58,7 +58,7 @@ class MyDrawer extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SettingsPage(),
+                          builder: (context) => const SettingsPage(),
                         ));
                   },
                 ),
@@ -70,8 +70,8 @@ class MyDrawer extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
             child: ListTile(
-              title: Text("D E C O N N E X I O N"),
-              leading: Icon(Icons.logout),
+              title: const Text("D E C O N N E X I O N"),
+              leading: const Icon(Icons.logout),
               onTap: logout,
             ),
           )
