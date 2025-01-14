@@ -45,7 +45,7 @@ class ChatPage extends StatelessWidget {
           ),
 
           //saisie de texte
-          _buildMessageInput(),
+          _buildUserInput(),
         ],
       ),
     );
@@ -79,28 +79,59 @@ class ChatPage extends StatelessWidget {
   // construction de la vue d'un message
   Widget _buildMessageItem(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-    return Text(data["message"]);
+
+    // is current user
+    bool isCurrentUser =
+        data["senderID"] == _authServices.getCurrentUser()!.uid;
+
+    // alignement des messages à droite si c'est envoyé par l'utilisateur connecté
+    var alignment =
+        isCurrentUser ? Alignment.centerRight : Alignment.centerLeft;
+
+    return Container(
+      alignment: alignment,
+      child: Column(
+        crossAxisAlignment:
+            isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Text(data["message"]),
+        ],
+      ),
+    );
   }
 
   // saisie de texte
-  Widget _buildMessageInput() {
-    return Row(
-      children: [
-        // champ de texte
-        Expanded(
-          child: MyTextField(
-            controller: _messageController,
-            hintText: "Saisissez votre message ...",
-            obscureText: false,
+  Widget _buildUserInput() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 50.0),
+      child: Row(
+        children: [
+          // champ de texte
+          Expanded(
+            child: MyTextField(
+              controller: _messageController,
+              hintText: "Saisissez votre message ...",
+              obscureText: false,
+            ),
           ),
-        ),
 
-        // bouton d'envoi
-        IconButton(
-          onPressed: sendMessage,
-          icon: const Icon(Icons.arrow_upward),
-        ),
-      ],
+          // bouton d'envoi
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.green,
+              shape: BoxShape.circle,
+            ),
+            margin: const EdgeInsets.only(right: 25.0),
+            child: IconButton(
+              onPressed: sendMessage,
+              icon: const Icon(
+                Icons.arrow_upward,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
