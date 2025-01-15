@@ -17,6 +17,9 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("AppChat de PARIS13"),
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.grey,
+        elevation: 0,
       ),
       drawer: const MyDrawer(),
       body: _buildUsersList(),
@@ -26,7 +29,7 @@ class HomePage extends StatelessWidget {
   // construction de la liste des utilisateurs avec tous les users sauf l'utilisateur connecté
   Widget _buildUsersList() {
     return StreamBuilder(
-      stream: _chatServices.getUsersStream(),
+      stream: _chatServices.getUsersStreamExcludingBlocked(),
       builder: (context, snapshot) {
         // erreurs
         if (snapshot.hasError) {

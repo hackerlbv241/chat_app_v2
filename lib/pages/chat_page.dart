@@ -1,10 +1,11 @@
+import 'package:chat_app/components/chat_bubble.dart';
 import 'package:chat_app/components/my_textfield.dart';
 import 'package:chat_app/services/auth/auth_service.dart';
 import 'package:chat_app/services/chat/chat_services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
   final String receiverEmail;
   final String receiverID;
 
@@ -14,29 +15,82 @@ class ChatPage extends StatelessWidget {
     required this.receiverID,
   });
 
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
   // text controller
   final TextEditingController _messageController = TextEditingController();
 
   // chat et auth services
   final ChatService _chatServices = ChatService();
   final AuthService _authServices = AuthService();
+  // focusNode
+  FocusNode myFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // add listener to focus node
+    myFocusNode.addListener(() {
+      if (!myFocusNode.hasFocus) {
+        // délai pour que le clavier se ferme
+        Future.delayed(
+          const Duration(milliseconds: 500),
+          () => scrollDown(),
+        );
+      }
+    });
+
+    Future.delayed(
+      const Duration(milliseconds: 500),
+      () => scrollDown(),
+    );
+  }
+
+  @override
+  void dispose() {
+    myFocusNode.dispose();
+    _messageController.dispose();
+    super.dispose();
+  }
+
+  // défilement vers le bas
+  final ScrollController _scrollController = ScrollController();
+  void scrollDown() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(seconds: 1),
+      curve: Curves.fastOutSlowIn,
+    );
+  }
 
   // envoyer un message
   void sendMessage() async {
     // s'il y'a quelque chose le champ de texte
     if (_messageController.text.isNotEmpty) {
       // envoi du message
-      await _chatServices.sendMessage(receiverID, _messageController.text);
+      await _chatServices.sendMessage(
+          widget.receiverID, _messageController.text);
 
       // vider le champ de texte
       _messageController.clear();
     }
+
+    scrollDown();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(receiverEmail)),
+      appBar: AppBar(
+        title: Text(widget.receiverEmail),
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.grey,
+        elevation: 0,
+      ),
       body: Column(
         children: [
           // afficher tous les messages
@@ -55,7 +109,7 @@ class ChatPage extends StatelessWidget {
   Widget _buildMessageList() {
     String senderID = _authServices.getCurrentUser()!.uid;
     return StreamBuilder(
-      stream: _chatServices.getMessages(senderID, receiverID),
+      stream: _chatServices.getMessages(senderID, widget.receiverID),
       builder: (context, snapshot) {
         // erreurs
         if (snapshot.hasError) {
@@ -69,6 +123,7 @@ class ChatPage extends StatelessWidget {
 
         // retourne la liste des vues
         return ListView(
+          controller: _scrollController,
           children:
               snapshot.data!.docs.map((doc) => _buildMessageItem(doc)).toList(),
         );
@@ -94,7 +149,12 @@ class ChatPage extends StatelessWidget {
         crossAxisAlignment:
             isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          Text(data["message"]),
+          ChatBubble(
+            message: data["message"],
+            isCurrentUser: isCurrentUser,
+            messageId: doc.id,
+            userId: data["senderID"],
+          ),
         ],
       ),
     );
@@ -112,6 +172,7 @@ class ChatPage extends StatelessWidget {
               controller: _messageController,
               hintText: "Saisissez votre message ...",
               obscureText: false,
+              focusNode: myFocusNode,
             ),
           ),
 
